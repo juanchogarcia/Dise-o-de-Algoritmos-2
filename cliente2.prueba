@@ -1,0 +1,13 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+int main(int argc, char **argv){
+	double r;
+	int i = 4;
+	i = pow(i,2);
+	r = sqrt(i);
+	int r2 = (int)r;
+	printf("%d\n",r2);
+}
