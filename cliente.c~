@@ -62,8 +62,6 @@ void Costo(int **Costos, int **Rutas, int **Datos, int veh, int cli)
 }
 */
 
-/*hola*/
-
 int main(int argc, char **argv)
 {
     FILE *archivo;
