@@ -1,0 +1,20 @@
+funcion de costo
+
+//Funcion en pseudicodigo sin contemplar ventanas
+//Hoy hago esta y luego le hago lo de las ventanas
+
+costo()
+{
+  while sobre rutas
+  {
+    Si ruta comienza no comienza con -1 //solo entran vehiculos con ciudad asignada
+      se suma a costo desde el deposito hasta esa ciudad
+      //variable que se aumenta para recorrer la fila de la matriz
+      while no es -1
+        se ve la ciudad anterior y se suma la distancia hasta la ciudad actual
+      //Si se sale del ciclo es que se llego a -1 en la matriz
+      Se suma la distancia desde la ultima ciudad hasta el deposito
+    
+    Se pasa a siguiente ruta
+  }
+}
