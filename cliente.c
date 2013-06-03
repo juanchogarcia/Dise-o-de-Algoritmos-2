@@ -13,6 +13,21 @@ double CostoRutaAct=0;
 #define True 1
 #define False 0
 
+double Costo(int **Costos,int **Rutas,int **Carga,int **Datos,int veh,int cli){
+	double cost = 0.0;
+	int i,j;
+	for (i=0;i<veh;++i){
+		if (Rutas[i][0]!=-1){
+			cost = cost + Costos[0][Rutas[i][0]];
+			for(j=1;(j<cli) && (Rutas[i][j]!=-1);++j){
+				cost = cost + Costos[Rutas[i][j-1]][Rutas[i][j]];
+			}
+			cost = cost + Costos[Rutas[i][j-1]][0];
+		}
+	}
+	return cost;
+}
+
 void Sol_Aleatoria(int **Costos, int **Datos, int* Cargas, int** Rutas, int cli, int veh)
 {
   srand(time(NULL)); 
