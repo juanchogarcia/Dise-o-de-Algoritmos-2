@@ -13,22 +13,46 @@ double CostoRutaAct=0;
 #define True 1
 #define False 0
 
-double Costo(int **Costos,int **Rutas,int **Carga,int **Datos,int veh,int cli){
+double Costo(int **Costos,int **Rutas,int **Cargas,int **Datos,int veh,int cli){
 	double cost = 0.0;
 	int i,j;
 	for (i=0;i<veh;++i){
 		if (Rutas[i][0]!=-1){
-			cost = cost + Costos[0][Rutas[i][0]];
-			for(j=1;(j<cli) && (Rutas[i][j]!=-1);++j){
-				cost = cost + Costos[Rutas[i][j-1]][Rutas[i][j]];
+			Cargas[1][i] = Cargas[1][i]  + Costos[0][Rutas[i][0]];
+			if ((Cargas[2][i] + Costos[0][Rutas[i][0]])<Datos[1][Rutas[i][0]]){
+				Cargas[2][i]=Datos[1][Rutas[i][0]] + Datos[3][Rutas[i][0]];
+			}else{
+				Cargas[2][i] = Cargas[2][i]  + Costos[0][Rutas[i][0]] + Datos[3][Rutas[i][0]];
 			}
-			cost = cost + Costos[Rutas[i][j-1]][0];
+			
+			if (Cargas[2][i]>Datos[2][Rutas[i][0]]){
+				Cargas[1][i] = Cargas[1][i] + (Cargas[2][i]-Datos[2][Rutas[i][0]]);
+			}
+			for(j=1;(j<cli) && (Rutas[i][j]!=-1);++j){
+				Cargas[1][i]  = Cargas[1][i]  + Costos[Rutas[i][j-1]][Rutas[i][j]];
+				//Cargas[2][i] = Cargas[2][i]  + Costos[Rutas[i][j-1]][Rutas[i][j]] + Datos[3][Rutas[i][j]];
+				if ((Cargas[2][i] + Costos[Rutas[i][j-1]][Rutas[i][j]])<Datos[1][Rutas[i][j]]){
+					Cargas[2][i]=Costos[Rutas[i][j-1]][Rutas[i][j]] + Datos[3][Rutas[i][j]];
+				}else{
+					Cargas[2][i] = Cargas[2][i]  + Costos[Rutas[i][j-1]][Rutas[i][j]] + Datos[3][Rutas[i][j]];
+				}
+			
+				if (Cargas[2][i]>Datos[2][Rutas[i][j]]){
+					Cargas[1][i] = Cargas[1][i] + (Cargas[2][i]-Datos[2][Rutas[i][j]]);
+				}	
+			}
+			Cargas[1][i]  = Cargas[1][i]  + Costos[Rutas[i][j-1]][0];
+			Cargas[2][i] = Cargas[2][i]  + Costos[0][Rutas[i][0]];
 		}
+	}
+	
+	for (j=0;j<veh;++j){
+		cost = cost + Cargas[1][j];
 	}
 	return cost;
 }
 
-void Sol_Aleatoria(int **Costos, int **Datos, int* Cargas, int** Rutas, int cli, int veh)
+void Sol_Aleatoria(int **Costos, int **Datos, int **Cargas, int** Rutas, int cli, int veh)
 {
   srand(time(NULL)); 
   int i;
@@ -37,13 +61,13 @@ void Sol_Aleatoria(int **Costos, int **Datos, int* Cargas, int** Rutas, int cli,
   {
     printf("i %d\n", i);
     rnd=rand()%(veh);
-    while(!((Cargas[rnd]+Datos[0][i])<=Cap)){
-      //printf("CargaAc %d\n", Cargas[rnd]+Datos[0][i]);
+    while(!((Cargas[0][rnd]+Datos[0][i])<=Cap)){
+      //printf("CargaAc %d\n", Cargas[0][rnd]+Datos[0][i]);
       //printf("Cap %d\n", Cap);
       rnd=rand()%(veh);
       printf("Ale %d\n", rnd);
     }
-    Cargas[rnd]+=Datos[0][i];
+    Cargas[0][rnd]+=Datos[0][i];
     int R;
     for(R=0;R<cli;++R){
       if(Rutas[rnd][R]==-1){
@@ -93,6 +117,9 @@ int main(int argc, char **argv)
     int **Costos;
     int **Datos;
     int **Rutas;
+    int **Cargas;
+    int h;
+
     Pares *par = NULL;
     if (archivo == NULL)
     {
@@ -132,12 +159,12 @@ int main(int argc, char **argv)
         }
 
     }
-   
-    int Cargas[number];
-    int h;
     
+    Cargas = Crear_Matriz(3,number);
     for(h=0; h<number;++h){
-      Cargas[h]=0;
+      Cargas[0][h]=0;
+      Cargas[1][h]=0;
+      Cargas[2][h]=0;
     }
     
     /*
@@ -200,9 +227,10 @@ int main(int argc, char **argv)
     ImprimirMatriz(Rutas,number,n);
     
     for(i=0;i<number;++i){
-      printf("veh %d  carga %d \n",i,Cargas[i]);
+      printf("veh %d  carga %d \n",i,Cargas[0][i]);
     }
-    
+    int cs = Costo(Costos,Rutas,Cargas,Datos,number,n);
+    printf("%d\n",cs);
     fclose(archivo);
     exit(0);
 }
