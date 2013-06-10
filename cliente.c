@@ -274,7 +274,7 @@ int main(int argc, char **argv)
     int cic=0;
     CostoM = Costo(Costos,Rutas,Cargas,Datos,number,n);
     CostoMP = Costo(Costos,RutasP,CargasP,Datos,number,n);
-    while(cic<10){
+    while(cic<1000){
         if(CostoMP<CostoM){
             reinicializarRutas(Rutas,number,n);
             reinicializarCargas(Cargas,number,n);
