@@ -1,5 +1,6 @@
 // Global variables
 int Cap;
+int CostoMejor;
 double CostoRutaAct=0;
 
 #include <stdio.h>
@@ -115,9 +116,13 @@ int main(int argc, char **argv)
     int c_arco,n,e1,e2;
     int i,j;
     int **Costos;
+    int **CostosMejor;
     int **Datos;
+    int **DatosMejor;
     int **Rutas;
+    int **RutasMejor;
     int **Cargas;
+    int **CargasMejor;
     int h;
 
     Pares *par = NULL;
