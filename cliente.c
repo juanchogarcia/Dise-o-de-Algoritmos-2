@@ -166,10 +166,14 @@ int main(int argc, char **argv)
     }
     
     Cargas = Crear_Matriz(3,number);
+    CargasP = Crear_Matriz(3,number);
     for(h=0; h<number;++h){
       Cargas[0][h]=0;
+      CargasP[0][h]=0;
       Cargas[1][h]=0;
+      CargasP[1][h]=0;
       Cargas[2][h]=0;
+      CargasP[2][h]=0;
     }
     
     /*
