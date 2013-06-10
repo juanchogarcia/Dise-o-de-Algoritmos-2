@@ -1,7 +1,8 @@
 // Global variables
 int Cap;
 int CostoM;
-int CostoMP;
+int CostoMP = 999999999;
+int CostoInt;
 double CostoRutaAct=0;
 
 #include <stdio.h>
@@ -10,10 +11,17 @@ double CostoRutaAct=0;
 #include <time.h>
 #include "Par.h"
 #include "Vector.h"
+#include <string.h>
+
 
 #define N 100
 #define True 1
 #define False 0
+
+void matriscopy (void * destmat, void * srcmat, int n, int number) 
+{
+  memcpy(destmat,srcmat, n*number*sizeof(int));
+}
 
 double Costo(int **Costos,int **Rutas,int **Cargas,int **Datos,int veh,int cli){
 	double cost = 0.0;
@@ -142,8 +150,11 @@ int main(int argc, char **argv)
     //int **DatosP;
     int **Rutas;
     int **RutasP;
+    int **RutasInt;
     int **Cargas;
     int **CargasP;
+    int **CargasInt;
+    //Eliminar Cargas y colocarlo dentro de la funcion costo
     int h;
 
     Pares *par = NULL;
@@ -188,13 +199,18 @@ int main(int argc, char **argv)
     
     Cargas = Crear_Matriz(3,number);
     CargasP = Crear_Matriz(3,number);
+    CargasInt = Crear_Matriz(3,number);
+    
     for(h=0; h<number;++h){
       Cargas[0][h]=0;
       CargasP[0][h]=0;
+      CargasInt[0][h]=0;
       Cargas[1][h]=0;
       CargasP[1][h]=0;
+      CargasInt[1][h]=0;
       Cargas[2][h]=0;
       CargasP[2][h]=0;
+      CargasInt[2][h]=0;
     }
     
     /*
@@ -211,12 +227,14 @@ int main(int argc, char **argv)
     //DatosP = Crear_Matriz(4,n);
     Rutas = Crear_Matriz(number,n);
     RutasP = Crear_Matriz(number,n);
+    RutasInt = Crear_Matriz(number,n);
     int mi,mj;
     
     for(mi=0;mi<number;++mi){
       for(mj=0;mj<n;++mj){
         Rutas[mi][mj]=-1;
         RutasP[mi][mj]=-1;
+        RutasInt[mi][mj]=-1;
       }
     }
     
@@ -259,7 +277,7 @@ int main(int argc, char **argv)
     }
     
     Sol_Aleatoria(Costos, Datos, Cargas, Rutas, n, number);    
-    Sol_Aleatoria(Costos, Datos, CargasP, RutasP, n, number);
+    //Sol_Aleatoria(Costos, Datos, CargasP, RutasP, n, number);
     
     /*
     while(True){
@@ -273,9 +291,9 @@ int main(int argc, char **argv)
     
     int cic=0;
     CostoM = Costo(Costos,Rutas,Cargas,Datos,number,n);
-    CostoMP = Costo(Costos,RutasP,CargasP,Datos,number,n);
+    //CostoMP = Costo(Costos,RutasP,CargasP,Datos,number,n);
     while(cic<10000){
-        if(CostoMP<CostoM){
+        /*if(CostoMP<CostoM){
             reinicializarRutas(Rutas,number,n);
             reinicializarCargas(Cargas,number,n);
             Sol_Aleatoria(Costos, Datos, Cargas, Rutas, n, number);
@@ -287,7 +305,7 @@ int main(int argc, char **argv)
             Sol_Aleatoria(Costos, Datos, CargasP, RutasP, n, number);
             CostoMP = Costo(Costos,RutasP,CargasP,Datos,number,n);
             printf("%d\n",CostoM);
-        }
+        }*/
         cic++;
     }
     //ImprimirMatriz(Rutas,number,n);
