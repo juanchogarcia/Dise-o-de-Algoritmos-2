@@ -33,7 +33,7 @@
           <buildCommandWorkingDir>.</buildCommandWorkingDir>
           <buildCommand>${MAKE} -f Makefile</buildCommand>
           <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
-          <executablePath></executablePath>
+          <executablePath>cliente</executablePath>
         </makeTool>
       </makefileType>
       <item path="Par.c" ex="false" tool="0" flavor2="0">
