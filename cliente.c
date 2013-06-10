@@ -1,6 +1,7 @@
 // Global variables
 int Cap;
-int CostoMejor;
+int CostoM;
+int CostoMP;
 double CostoRutaAct=0;
 
 #include <stdio.h>
@@ -53,9 +54,28 @@ double Costo(int **Costos,int **Rutas,int **Cargas,int **Datos,int veh,int cli){
 	return cost;
 }
 
+void reinicializarRutas(int **Rutas,int number,int n){
+    int mi,mj;
+    
+    for(mi=0;mi<number;++mi){
+      for(mj=0;mj<n;++mj){
+        Rutas[mi][mj]=-1;
+      }
+    }
+}
+
+void reinicializarCargas(int **Cargas, int number,int n){
+    int h;
+    for(h=0; h<number;++h){
+      Cargas[0][h]=0;
+      Cargas[1][h]=0;
+      Cargas[2][h]=0;
+    }
+}
+
 void Sol_Aleatoria(int **Costos, int **Datos, int **Cargas, int** Rutas, int cli, int veh)
 {
-  srand(time(NULL)); 
+  
   int i;
   int rnd;
   for(i=1; i<cli; ++i)
@@ -106,6 +126,7 @@ void Costo(int **Costos, int **Rutas, int **Datos, int veh, int cli)
 
 int main(int argc, char **argv)
 {
+    srand(time(NULL));
     FILE *archivo;
     archivo = fopen(argv[1],"r");
     char *buffer=(char *)malloc(N*sizeof(char));
@@ -116,9 +137,9 @@ int main(int argc, char **argv)
     int c_arco,n,e1,e2;
     int i,j;
     int **Costos;
-    int **CostosP;
+    //int **CostosP;
     int **Datos;
-    int **DatosP;
+    //int **DatosP;
     int **Rutas;
     int **RutasP;
     int **Cargas;
@@ -185,9 +206,9 @@ int main(int argc, char **argv)
     n = n-1;//Por leer el ultimo 2 veces
     Pares *aux = par;
     Costos = Crear_Matriz(n,n);
-    CostosP = Crear_Matriz(n,n);
+    //CostosP = Crear_Matriz(n,n);
     Datos = Crear_Matriz(4,n);
-    DatosP = Crear_Matriz(4,n);
+    //DatosP = Crear_Matriz(4,n);
     Rutas = Crear_Matriz(number,n);
     RutasP = Crear_Matriz(number,n);
     int mi,mj;
@@ -214,10 +235,12 @@ int main(int argc, char **argv)
                 distancia = sqrt((e1+e2));
                 c_arco = (int)distancia;
                 Costos[i][j] = c_arco;
+                //CostosP[i][j] = c_arco;
             }
             else
             {
                 Costos[i][j] = 0;
+                //CostosP[i][j] = 0;
             }
             aux2 = aux2->sig;
         }
@@ -232,25 +255,47 @@ int main(int argc, char **argv)
         Datos[1][id] = aux3->vi;
         Datos[2][id] = aux3->vf;
         Datos[3][id] = aux3->ts;
-        DatosP[0][id] = aux3->dem;
-        DatosP[1][id] = aux3->vi;
-        DatosP[2][id] = aux3->vf;
-        DatosP[3][id] = aux3->ts;
         aux3 = aux3->sig;
     }
     
-    Sol_Aleatoria(Costos, Datos, Cargas, Rutas, n, number);
-    Sol_Aleatoria(CostosP, DatosP, CargasP, RutasP, n, number);
+    Sol_Aleatoria(Costos, Datos, Cargas, Rutas, n, number);    
+    Sol_Aleatoria(Costos, Datos, CargasP, RutasP, n, number);
     
+    /*
+    while(True){
+        reinicializarRutas(Rutas,number,n);
+        reinicializarCargas(Cargas,number,n);
+        Sol_Aleatoria(Costos, Datos, Cargas, Rutas, n, number);
+        CostoM = Costo(Costos,Rutas,Cargas,Datos,number,n);
+        printf("%d\n",CostoM);
+    }
+    */
+    
+    int cic=0;
+    while(cic<10){
+        CostoM = Costo(Costos,Rutas,Cargas,Datos,number,n);
+        CostoMP = Costo(Costos,RutasP,CargasP,Datos,number,n);
+        if(CostoMP<CostoM){
+            reinicializarRutas(Rutas,number,n);
+            reinicializarCargas(Cargas,number,n);
+            Sol_Aleatoria(Costos, Datos, Cargas, Rutas, n, number);
+            CostoM = Costo(Costos,Rutas,Cargas,Datos,number,n);
+            printf("%d\n",CostoMP);
+        }else{
+            reinicializarRutas(RutasP,number,n);
+            reinicializarCargas(CargasP,number,n);
+            Sol_Aleatoria(Costos, Datos, CargasP, RutasP, n, number);
+            CostoMP = Costo(Costos,RutasP,CargasP,Datos,number,n);
+            printf("%d\n",CostoM);
+        }
+        cic++;
+    }
     //ImprimirMatriz(Rutas,number,n);
     
     for(i=0;i<number;++i){
       //printf("veh %d  carga %d \n",i,Cargas[0][i]);
     }
-    int cs = Costo(Costos,Rutas,Cargas,Datos,number,n);
-    printf("%d\n",cs);
-    cs = Costo(CostosP,RutasP,CargasP,DatosP,number,n);
-    printf("%d\n",cs);
+    
     fclose(archivo);
     exit(0);
 }
