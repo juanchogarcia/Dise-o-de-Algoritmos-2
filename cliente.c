@@ -116,13 +116,13 @@ int main(int argc, char **argv)
     int c_arco,n,e1,e2;
     int i,j;
     int **Costos;
-    int **CostosMejor;
+    int **CostosP;
     int **Datos;
-    int **DatosMejor;
+    int **DatosP;
     int **Rutas;
-    int **RutasMejor;
+    int **RutasP;
     int **Cargas;
-    int **CargasMejor;
+    int **CargasP;
     int h;
 
     Pares *par = NULL;
@@ -181,13 +181,17 @@ int main(int argc, char **argv)
     n = n-1;//Por leer el ultimo 2 veces
     Pares *aux = par;
     Costos = Crear_Matriz(n,n);
+    CostosP = Crear_Matriz(n,n);
     Datos = Crear_Matriz(4,n);
+    DatosP = Crear_Matriz(4,n);
     Rutas = Crear_Matriz(number,n);
+    RutasP = Crear_Matriz(number,n);
     int mi,mj;
     
     for(mi=0;mi<number;++mi){
       for(mj=0;mj<n;++mj){
         Rutas[mi][mj]=-1;
+        RutasP[mi][mj]=-1;
       }
     }
     
