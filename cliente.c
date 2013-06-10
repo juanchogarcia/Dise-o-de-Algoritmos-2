@@ -232,10 +232,15 @@ int main(int argc, char **argv)
         Datos[1][id] = aux3->vi;
         Datos[2][id] = aux3->vf;
         Datos[3][id] = aux3->ts;
+        DatosP[0][id] = aux3->dem;
+        DatosP[1][id] = aux3->vi;
+        DatosP[2][id] = aux3->vf;
+        DatosP[3][id] = aux3->ts;
         aux3 = aux3->sig;
     }
     
     Sol_Aleatoria(Costos, Datos, Cargas, Rutas, n, number);
+    Sol_Aleatoria(CostosP, DatosP, CargasP, RutasP, n, number);
     
     //ImprimirMatriz(Rutas,number,n);
     
@@ -243,6 +248,8 @@ int main(int argc, char **argv)
       //printf("veh %d  carga %d \n",i,Cargas[0][i]);
     }
     int cs = Costo(Costos,Rutas,Cargas,Datos,number,n);
+    printf("%d\n",cs);
+    cs = Costo(CostosP,RutasP,CargasP,DatosP,number,n);
     printf("%d\n",cs);
     fclose(archivo);
     exit(0);
