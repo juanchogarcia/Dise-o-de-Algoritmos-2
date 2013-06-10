@@ -59,13 +59,13 @@ void Sol_Aleatoria(int **Costos, int **Datos, int **Cargas, int** Rutas, int cli
   int rnd;
   for(i=1; i<cli; ++i)
   {
-    printf("i %d\n", i);
+    //printf("i %d\n", i);
     rnd=rand()%(veh);
     while(!((Cargas[0][rnd]+Datos[0][i])<=Cap)){
       //printf("CargaAc %d\n", Cargas[0][rnd]+Datos[0][i]);
       //printf("Cap %d\n", Cap);
       rnd=rand()%(veh);
-      printf("Ale %d\n", rnd);
+      //printf("Ale %d\n", rnd);
     }
     Cargas[0][rnd]+=Datos[0][i];
     int R;
@@ -153,7 +153,7 @@ int main(int argc, char **argv)
                 break;
             }
             fscanf(archivo,"%d %d %d %d %d %d %d",&id,&x,&y,&d,&a,&b,&s);
-            printf("%d %d %d %d %d %d %d\n",id,x,y,d,a,b,s);
+            //printf("%d %d %d %d %d %d %d\n",id,x,y,d,a,b,s);
             Insertar(&par,id,x,y,d,a,b,s);
             
         }
@@ -224,10 +224,10 @@ int main(int argc, char **argv)
     
     Sol_Aleatoria(Costos, Datos, Cargas, Rutas, n, number);
     
-    ImprimirMatriz(Rutas,number,n);
+    //ImprimirMatriz(Rutas,number,n);
     
     for(i=0;i<number;++i){
-      printf("veh %d  carga %d \n",i,Cargas[0][i]);
+      //printf("veh %d  carga %d \n",i,Cargas[0][i]);
     }
     int cs = Costo(Costos,Rutas,Cargas,Datos,number,n);
     printf("%d\n",cs);
