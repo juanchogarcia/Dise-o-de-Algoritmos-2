@@ -72,7 +72,7 @@ double Costo(int **Costos,int **Rutas,int **Datos,int veh,int cli){
 	double cost = 0.0;
 	int i,j;
 	int Cargas[2][veh];
-	
+        
 	for(i=0;i<2;++i){
 		for(j=0;j<veh;++j){
 			Cargas[i][j]=0;
@@ -170,7 +170,6 @@ void Sol_Aleatoria(int **Costos, int **Datos, int** Rutas, int cli, int veh , in
         //Con el arreglo LRec no es necesario este bucle que usa R
         break;
       }
-    
     }*/
     Rutas[rnd][LRec[rnd]]=i;
     LRec[rnd]++;
@@ -181,6 +180,7 @@ void Sol_Aleatoria(int **Costos, int **Datos, int** Rutas, int cli, int veh , in
 
 int main(int argc, char **argv)
 {
+
     srand(time(NULL));
     FILE *archivo;
     archivo = fopen(argv[1],"r");
@@ -196,11 +196,7 @@ int main(int argc, char **argv)
     int **Rutas;
     int **RutasP;
     int **RutasInt;
-    int **Cargas;
-    int **CargasP;
-    int **CargasInt;
    
-    
     //Eliminar Cargas y colocarlo dentro de la funcion costo.
     int h;
 
@@ -248,21 +244,15 @@ int main(int argc, char **argv)
         LRec[h]=0;
     }
     
-    Cargas = Crear_Matriz(3,number);
-    CargasP = Crear_Matriz(3,number);
-    CargasInt = Crear_Matriz(3,number);
-    
-    for(h=0; h<number;++h){
-      Cargas[0][h]=0;
-      CargasP[0][h]=0;
-      CargasInt[0][h]=0;
-      Cargas[1][h]=0;
-      CargasP[1][h]=0;
-      CargasInt[1][h]=0;
-      Cargas[2][h]=0;
-      CargasP[2][h]=0;
-      CargasInt[2][h]=0;
+    int **Cargas= Crear_Matriz(2,number);
+    int ii;
+    int jj;
+    for(ii=0;ii<2;++ii){
+            for(jj=0;jj<number;++jj){
+                    Cargas[ii][jj]=0;
+		}
     }
+    
     
     n = Longitud(par);
     n = n-1;//Por leer el ultimo 2 veces
@@ -339,6 +329,9 @@ int main(int argc, char **argv)
     //CostoMP = Costo(Costos,RutasP,CargasP,Datos,number,n);
     while(True){
         cic=0;
+        clock_t start = clock();
+        /*Do something*/
+
         while(cic<1000000){
             //reinicializarRutas(Rutas, n, number);
             matriscopy (RutasInt,Rutas, n, number);
@@ -370,6 +363,9 @@ int main(int argc, char **argv)
 
             cic++;
         }
+        clock_t end = clock();
+        float seconds = (float)(end - start) / CLOCKS_PER_SEC;
+        printf("%f",seconds);
         printf("%d\n",CostoMP);
         if(CostoMP<CostoM){
                 matriscopy (Rutas,RutasP, n, number);
