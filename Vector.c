@@ -22,10 +22,18 @@ void Destruir_Matriz(int *matriz){
 
 void ImprimirMatriz(int **matriz,int n,int m){
 	int i,j;
+        int verif=0;
 	for (i=0;i<n;i++){
 		for (j=0;j<m;j++){
-			printf("%d ",matriz[i][j]);
+                    printf("%d ",matriz[i][j]);
+                    if(matriz[i][j]==-1)
+                        break;
+                    verif++;
+			
 		}
 		printf("\n");
 	}
+        printf("\n");
+        printf("%d\n",verif);
+        printf("\n");
 }

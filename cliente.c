@@ -110,7 +110,8 @@ void Sol_Aleatoria(int **Costos, int **Datos, int** Rutas, int cli, int veh , in
       rnd=rand()%(veh);
     }
     Carga[rnd]+=Datos[0][i];
-    int R;
+    //Arreglado y Verificado
+    /*int R;
     for(R=0;R<cli;++R){
       if(Rutas[rnd][R]==-1){
         Rutas[rnd][R]=i;
@@ -118,7 +119,10 @@ void Sol_Aleatoria(int **Costos, int **Datos, int** Rutas, int cli, int veh , in
         //Con el arreglo LRec no es necesario este bucle que usa R
         break;
       }
-    }
+    
+    }*/
+    Rutas[rnd][LRec[rnd]]=i;
+    LRec[rnd]++;
   }  
 }
 
@@ -284,9 +288,14 @@ int main(int argc, char **argv)
     //CostoMP = Costo(Costos,RutasP,CargasP,Datos,number,n);
     while(True){
         cic=0;
-        while(cic<100000){
+        while(cic<1000000){
+            //reinicializarRutas(Rutas, n, number);
             matriscopy (RutasInt,Rutas, n, number);
-            reinicializarCargas(Cargas, number, n);
+            //ImprimirMatriz(RutasInt,number,n);
+            //printf("hola");
+            reinicializarCargas(Cargas, number, 3);
+            //memset(Cargas, 0, sizeof(Cargas[0][0]) * 3 * n);
+            //printf("chao");
             rnd=rand()%(number);
             while(LRec[rnd]<2){
                 rnd=rand()%(number);
@@ -311,8 +320,11 @@ int main(int argc, char **argv)
             cic++;
         }
         printf("%d\n",CostoMP);
-        matriscopy (Rutas,RutasInt, n, number);
-        CostoM = CostoMP;
+        if(CostoMP<CostoM){
+                matriscopy (Rutas,RutasP, n, number);
+                ImprimirMatriz(RutasInt,number,n);
+                CostoM = CostoMP;
+        }
     }
    
     fclose(archivo);
