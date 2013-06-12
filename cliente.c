@@ -25,9 +25,9 @@ void matriscopy (void * destmat, void * srcmat, int n, int number)
   memcpy(destmat,srcmat, n*number*sizeof(int));
 }
 
-/* Funcion que obtiene el costo total de una solucion al VRP con ventanas deslizantes. */
+/* Version antigua (Para los nostalgicos). */
 
-double Costo(int **Costos,int **Rutas,int **Cargas,int **Datos,int veh,int cli){
+/*double Costo(int **Costos,int **Rutas,int **Cargas,int **Datos,int veh,int cli){
 	double cost = 0.0;
 	int i,j;
 	for (i=0;i<veh;++i){
@@ -63,6 +63,57 @@ double Costo(int **Costos,int **Rutas,int **Cargas,int **Datos,int veh,int cli){
 	for (j=0;j<veh;++j){
 		cost = cost + Cargas[1][j];
 	}
+	return cost;
+}*/
+
+/* Funcion que obtiene el costo total de una solucion al VRP con ventanas deslizantes. */
+
+double Costo(int **Costos,int **Rutas,int **Datos,int veh,int cli){
+	double cost = 0.0;
+	int i,j;
+	int Cargas[2][veh];
+	
+	for(i=0;i<2;++i){
+		for(j=0;j<veh;++j){
+			Cargas[i][j]=0;
+		}
+	}
+	
+	for (i=0;i<veh;++i){
+		if (Rutas[i][0]!=-1){
+			Cargas[0][i] = Cargas[0][i]  + Costos[0][Rutas[i][0]];
+			if ((Cargas[1][i] + Costos[0][Rutas[i][0]])<Datos[1][Rutas[i][0]]){
+				Cargas[1][i]=Datos[1][Rutas[i][0]] + Datos[3][Rutas[i][0]];
+			}else{
+				Cargas[1][i] = Cargas[1][i]  + Costos[0][Rutas[i][0]] + Datos[3][Rutas[i][0]];
+			}
+			
+			if (Cargas[1][i]>Datos[2][Rutas[i][0]]){
+				Cargas[0][i] = Cargas[0][i] + (Cargas[1][i]-Datos[2][Rutas[i][0]]);
+			}
+			for(j=1;(j<cli) && (Rutas[i][j]!=-1);++j){
+				Cargas[0][i]  = Cargas[0][i]  + Costos[Rutas[i][j-1]][Rutas[i][j]];
+				//Cargas[2][i] = Cargas[2][i]  + Costos[Rutas[i][j-1]][Rutas[i][j]] + Datos[3][Rutas[i][j]];
+				if ((Cargas[1][i] + Costos[Rutas[i][j-1]][Rutas[i][j]])<Datos[1][Rutas[i][j]]){
+					Cargas[1][i]=Costos[Rutas[i][j-1]][Rutas[i][j]] + Datos[3][Rutas[i][j]];
+				}else{
+					Cargas[1][i] = Cargas[1][i]  + Costos[Rutas[i][j-1]][Rutas[i][j]] + Datos[3][Rutas[i][j]];
+				}
+			
+				if (Cargas[1][i]>Datos[2][Rutas[i][j]]){
+					Cargas[0][i] = Cargas[0][i] + (Cargas[1][i]-Datos[2][Rutas[i][j]]);
+				}	
+			}
+			Cargas[0][i]  = Cargas[0][i]  + Costos[Rutas[i][j-1]][0];
+			Cargas[1][i] = Cargas[1][i]  + Costos[0][Rutas[i][0]];
+		}
+	}
+	
+	for (j=0;j<veh;++j){
+		cost = cost + Cargas[0][j];
+	}
+	//liberar memoria. Casilla por casilla???
+	//free(Cargas);
 	return cost;
 }
 
@@ -283,7 +334,7 @@ int main(int argc, char **argv)
     int rnd;
     int rndC1;
     int rndC2;
-    CostoM = Costo(Costos,Rutas,Cargas,Datos,number,n);
+    CostoM = Costo(Costos,Rutas,Datos,number,n);
     printf("%d\n",CostoM);
     //CostoMP = Costo(Costos,RutasP,CargasP,Datos,number,n);
     while(True){
@@ -293,7 +344,7 @@ int main(int argc, char **argv)
             matriscopy (RutasInt,Rutas, n, number);
             //ImprimirMatriz(RutasInt,number,n);
             //printf("hola");
-            reinicializarCargas(Cargas, number, 3);
+            //reinicializarCargas(Cargas, number, 3);
             //memset(Cargas, 0, sizeof(Cargas[0][0]) * 3 * n);
             //printf("chao");
             rnd=rand()%(number);
@@ -310,7 +361,7 @@ int main(int argc, char **argv)
             RutasInt[rnd][rndC1]=RutasInt[rnd][rndC2];
             RutasInt[rnd][rndC2]=aux;
 
-            CostoInt = Costo(Costos,RutasInt,Cargas,Datos,number,n);
+            CostoInt = Costo(Costos,RutasInt,Datos,number,n);
 
             if(CostoInt<CostoMP && CostoInt<CostoM){
                 matriscopy (RutasP,RutasInt, n, number);
