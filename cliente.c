@@ -1,8 +1,5 @@
 // Global variables
 int Cap;
-int CostoM;
-int CostoMP = 999999999;
-int CostoInt;
 double CostoRutaAct=0;
 
 #include <stdio.h>
@@ -20,9 +17,16 @@ double CostoRutaAct=0;
 
 /* Procedimiento que copia una matriz en otra. */
 
-void matriscopy (void * destmat, void * srcmat, int n, int number) 
+void matrixcopy (int **destmat, int **srcmat, int n, int m) 
 {
-  memcpy(destmat,srcmat, n*number*sizeof(int));
+        int i,j;
+        for (i=0;i<n;i++){
+		for (j=0;j<m;j++){
+                    //if(srcmat[i][j]==-1)
+                        //break;
+                    destmat[i][j]=srcmat[i][j];
+		}
+	}
 }
 
 /* Version antigua (Para los nostalgicos). */
@@ -195,7 +199,7 @@ int main(int argc, char **argv)
     int **Datos;
     int **Rutas;
     int **RutasP;
-    int **RutasInt;
+    int **RutasMejor;
    
     //Eliminar Cargas y colocarlo dentro de la funcion costo.
     int h;
@@ -261,14 +265,14 @@ int main(int argc, char **argv)
     Datos = Crear_Matriz(4,n);
     Rutas = Crear_Matriz(number,n);
     RutasP = Crear_Matriz(number,n);
-    RutasInt = Crear_Matriz(number,n);
+    RutasMejor = Crear_Matriz(number,n);
     int mi,mj;
     
     for(mi=0;mi<number;++mi){
       for(mj=0;mj<n;++mj){
         Rutas[mi][mj]=-1;
         RutasP[mi][mj]=-1;
-        RutasInt[mi][mj]=-1;
+        RutasMejor[mi][mj]=-1;
       }
     }
     
@@ -309,69 +313,66 @@ int main(int argc, char **argv)
     }
     
     Sol_Aleatoria(Costos, Datos, Rutas, n, number, LRec);    
-    
-    /*
-    while(True){
-        reinicializarRutas(Rutas,number,n);
-        reinicializarCargas(Cargas,number,n);
-        Sol_Aleatoria(Costos, Datos, Cargas, Rutas, n, number);
-        CostoM = Costo(Costos,Rutas,Cargas,Datos,number,n);
-        printf("%d\n",CostoM);
-    }
-    */
-    
-    int cic=0;
+   
+    int auxiliar;
+    int cic;
     int rnd;
     int rndC1;
     int rndC2;
-    CostoM = Costo(Costos,Rutas,Datos,number,n);
-    printf("%d\n",CostoM);
+    int it = 0;
+    int CostoActual;
+    int CostoMejor;
+    int CostoInt;
+    CostoActual = Costo(Costos,Rutas,Datos,number,n);
+    printf("%d\n",CostoActual);
     //CostoMP = Costo(Costos,RutasP,CargasP,Datos,number,n);
-    while(True){
-        cic=0;
+    while(it<1){
+        cic = 0;
+        /*De aqui, colocarlo como funcion.*/
+        CostoMejor= 999999999;
+        matrixcopy (RutasMejor,Rutas, number, n);
         clock_t start = clock();
-        /*Do something*/
-
-        while(cic<1000000){
-            //reinicializarRutas(Rutas, n, number);
-            matriscopy (RutasInt,Rutas, n, number);
-            //ImprimirMatriz(RutasInt,number,n);
-            //printf("hola");
-            //reinicializarCargas(Cargas, number, 3);
-            //memset(Cargas, 0, sizeof(Cargas[0][0]) * 3 * n);
-            //printf("chao");
+        while(cic<100000){
+            /*Obteniendo una ruta aleatoria.*/
             rnd=rand()%(number);
             while(LRec[rnd]<2){
                 rnd=rand()%(number);
             }
+            /*Obteniendo dos ciudades aleatorias de esa ruta.*/
             rndC1 = rand()%(LRec[rnd]);
             rndC2 = rand()%(LRec[rnd]);
             while(rndC1==rndC2){
                 rndC2 = rand()%(LRec[rnd]);
             }
-            int aux;
-            aux=RutasInt[rnd][rndC1];
-            RutasInt[rnd][rndC1]=RutasInt[rnd][rndC2];
-            RutasInt[rnd][rndC2]=aux;
-
-            CostoInt = Costo(Costos,RutasInt,Datos,number,n);
-
-            if(CostoInt<CostoMP && CostoInt<CostoM){
-                matriscopy (RutasP,RutasInt, n, number);
-                CostoMP=CostoInt;
+            
+            /*Swap entre ciudades de la misma ruta.*/
+            auxiliar=RutasMejor[rnd][rndC1];
+            RutasMejor[rnd][rndC1]=RutasMejor[rnd][rndC2];
+            RutasMejor[rnd][rndC2]=auxiliar;
+            
+            /*Costo de la nueva solucion obtenida.*/
+            CostoInt = Costo(Costos,RutasMejor,Datos,number,n);
+            if (CostoInt<CostoMejor){
+                CostoMejor = CostoInt;
+            }else{
+                /*Se deshace el cambio realizado originalmente. */
+                auxiliar=RutasMejor[rnd][rndC1];
+                RutasMejor[rnd][rndC1]=RutasMejor[rnd][rndC2];
+                RutasMejor[rnd][rndC2]=auxiliar;
             }
-
-            cic++;
+            cic++; 
         }
+        /*Hasta aqui colocarlo como funcion.*/
         clock_t end = clock();
         float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-        printf("%f",seconds);
-        printf("%d\n",CostoMP);
-        if(CostoMP<CostoM){
-                matriscopy (Rutas,RutasP, n, number);
-                ImprimirMatriz(RutasInt,number,n);
-                CostoM = CostoMP;
+        printf("%f\n",seconds);
+        printf("%d\n",CostoMejor);
+        if(CostoMejor<CostoActual){
+                matrixcopy (Rutas,RutasMejor, number, n);
+                ImprimirMatriz(Rutas,number,n);
+                CostoActual = CostoMejor;
         }
+        it++;
     }
    
     fclose(archivo);

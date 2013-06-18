@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 int** Crear_Matriz(int n,int m);
-void Destruir_Matriz(int *matriz);
+void Destruir_Matriz(int **matriz,int n);
 void ImprimirMatriz(int **matriz,int n,int m);
 
 #endif /* Vector */

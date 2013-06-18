@@ -16,8 +16,12 @@ int** Crear_Matriz(int n,int m){
 	return matriz;
 }
 
-void Destruir_Matriz(int *matriz){
-
+void Destruir_Matriz(int **matriz,int n){
+    int i;
+    for (i=0;i<n;++i){
+        free(matriz[i]);
+    }
+    free(matriz);
 }
 
 void ImprimirMatriz(int **matriz,int n,int m){
@@ -34,6 +38,6 @@ void ImprimirMatriz(int **matriz,int n,int m){
 		printf("\n");
 	}
         printf("\n");
-        printf("%d\n",verif);
+        /*printf("%d\n",verif);*/
         printf("\n");
 }
