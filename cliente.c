@@ -146,17 +146,12 @@ void reinicializarCargas(int **Cargas, int number,int n){
 
 /* Funcion que genera una solucion aleatoria al VRP con ventanas deslizantes. */
 
-void Sol_Aleatoria(int **Costos, int **Datos, int** Rutas, int cli, int veh , int *LRec)
+void Sol_Aleatoria(int *Carga, int **Costos, int **Datos, int** Rutas, int cli, int veh , int *LRec)
 {
   
   int i,rnd,j;
   
   /* Arreglo que contiene las cargas de los vehiculos. */
-  int Carga[veh];
-  
-  for(j=0;j<veh;++j){
-  	Carga[j]=0;
-  }
   
   for(i=1; i<cli; ++i)
   {
@@ -312,11 +307,22 @@ int main(int argc, char **argv)
         aux3 = aux3->sig;
     }
     
-    Sol_Aleatoria(Costos, Datos, Rutas, n, number, LRec);    
-   
+    int Carga[number];
+    int k;
+    for(k=0;k<number;++k){
+  	Carga[k]=0;
+    }
+    Sol_Aleatoria(Carga, Costos, Datos, Rutas, n, number, LRec);    
+    
+    int i1=-1;
+    int i2=-1;
+    int j1=-1;
+    int j2=-1;
+    
     int auxiliar;
     int cic;
     int rnd;
+    int rnd2;
     int rndC1;
     int rndC2;
     int it = 0;
@@ -326,50 +332,160 @@ int main(int argc, char **argv)
     CostoActual = Costo(Costos,Rutas,Datos,number,n);
     printf("%d\n",CostoActual);
     //CostoMP = Costo(Costos,RutasP,CargasP,Datos,number,n);
-    while(it<1){
+    matrixcopy (RutasMejor,Rutas, number, n);
+    int redRut=0;
+    int boolredRootext=True;
+    
+    if(boolredRootext){
+        while(redRut<50000){
+                    rnd=rand()%(number);
+                    while(LRec[rnd]<1){
+                        rnd=rand()%(number);
+                    }
+
+                    rnd2=rand()%(number);
+                    while(LRec[rnd2]<1){
+                        rnd2=rand()%(number);
+                    }
+
+                    while(rnd==rnd2){
+                        rnd2 = rand()%(number);
+                        while(LRec[rnd2]<1){
+                            rnd2=rand()%(number);
+                        }
+                    }
+
+                    rndC1 = rand()%(LRec[rnd]);
+
+                    if((Carga[rnd2]+Datos[0][RutasMejor[rnd][rndC1]])<=Cap){
+
+                        Carga[rnd2]=Carga[rnd2]+Datos[0][RutasMejor[rnd][rndC1]];
+
+                        Carga[rnd]=Carga[rnd]-Datos[0][RutasMejor[rnd][rndC1]];
+
+
+                        auxiliar=RutasMejor[rnd][LRec[rnd]-1];
+                        RutasMejor[rnd][LRec[rnd]-1]=RutasMejor[rnd][rndC1];
+                        RutasMejor[rnd][rndC1]=auxiliar;
+
+                        RutasMejor[rnd2][LRec[rnd2]]= RutasMejor[rnd][LRec[rnd]-1];
+                        LRec[rnd2]++;
+
+                        RutasMejor[rnd][LRec[rnd]-1]=-1;
+                        LRec[rnd]--;                    
+                    }
+
+                    printf("%d ",redRut);
+                    redRut++;            
+                }
+    }
+    ImprimirMatriz(RutasMejor,number,n);
+    CostoActual = Costo(Costos,RutasMejor,Datos,number,n);
+    printf("%d\n",CostoActual);
+    
+    while(1){
         cic = 0;
         /*De aqui, colocarlo como funcion.*/
-        CostoMejor= 999999999;
-        matrixcopy (RutasMejor,Rutas, number, n);
+        CostoMejor= CostoActual;  
         clock_t start = clock();
-        while(cic<100000){
-            /*Obteniendo una ruta aleatoria.*/
+        int bol=True;
+        while(cic<50000){    
+            if(bol){
+            bol=False;
+            //Obteniendo una ruta aleatoria.
             rnd=rand()%(number);
             while(LRec[rnd]<2){
                 rnd=rand()%(number);
             }
-            /*Obteniendo dos ciudades aleatorias de esa ruta.*/
+            //Obteniendo dos ciudades aleatorias de esa ruta.
             rndC1 = rand()%(LRec[rnd]);
             rndC2 = rand()%(LRec[rnd]);
             while(rndC1==rndC2){
                 rndC2 = rand()%(LRec[rnd]);
             }
             
-            /*Swap entre ciudades de la misma ruta.*/
+            //Swap entre ciudades de la misma ruta.
             auxiliar=RutasMejor[rnd][rndC1];
             RutasMejor[rnd][rndC1]=RutasMejor[rnd][rndC2];
             RutasMejor[rnd][rndC2]=auxiliar;
             
-            /*Costo de la nueva solucion obtenida.*/
+            //Costo de la nueva solucion obtenida.
             CostoInt = Costo(Costos,RutasMejor,Datos,number,n);
             if (CostoInt<CostoMejor){
                 CostoMejor = CostoInt;
-            }else{
-                /*Se deshace el cambio realizado originalmente. */
-                auxiliar=RutasMejor[rnd][rndC1];
-                RutasMejor[rnd][rndC1]=RutasMejor[rnd][rndC2];
-                RutasMejor[rnd][rndC2]=auxiliar;
+                i1 = rnd;
+                i2 = rnd;
+                j1 = rndC1;
+                j2 = rndC2;
             }
-            cic++; 
+            //Se deshace el cambio realizado originalmente.
+            auxiliar=RutasMejor[rnd][rndC1];
+            RutasMejor[rnd][rndC1]=RutasMejor[rnd][rndC2];
+            RutasMejor[rnd][rndC2]=auxiliar;
+            
+            }else{
+                bol=True;
+                //Obteniendo una ruta aleatoria.
+                rnd=rand()%(number);
+                while(LRec[rnd]<1){
+                    rnd=rand()%(number);
+                }
+                
+                rnd2=rand()%(number);
+                while(LRec[rnd2]<1){
+                    rnd2=rand()%(number);
+                }
+                
+                while(rnd==rnd2){
+                    rnd2 = rand()%(number);
+                    while(LRec[rnd2]<1){
+                        rnd2=rand()%(number);
+                    }
+                }
+                
+                rndC1 = rand()%(LRec[rnd]);
+                rndC2 = rand()%(LRec[rnd2]);
+                
+                if((Carga[rnd]-Datos[0][RutasMejor[rnd][rndC1]]+Datos[0][RutasMejor[rnd2][rndC2]])<=Cap && (Carga[rnd2]-Datos[0][RutasMejor[rnd2][rndC2]]+Datos[0][RutasMejor[rnd][rndC1]])<=Cap){
+                    Carga[rnd]=Carga[rnd]-Datos[0][RutasMejor[rnd][rndC1]]+Datos[0][RutasMejor[rnd2][rndC2]];
+                    Carga[rnd2]= Carga[rnd2]-Datos[0][RutasMejor[rnd2][rndC2]]+Datos[0][RutasMejor[rnd][rndC1]];
+                    
+                    auxiliar=RutasMejor[rnd][rndC1];
+                    RutasMejor[rnd][rndC1]=RutasMejor[rnd2][rndC2];
+                    RutasMejor[rnd2][rndC2]=auxiliar;
+                    
+                    CostoInt = Costo(Costos,RutasMejor,Datos,number,n);
+                    
+                    if (CostoInt<CostoMejor){
+                        CostoMejor = CostoInt;
+                        i1 = rnd;
+                        i2 = rnd2;
+                        j1 = rndC1;
+                        j2 = rndC2;
+                    }
+                    
+                    auxiliar=RutasMejor[rnd][rndC1];
+                    RutasMejor[rnd][rndC1]=RutasMejor[rnd2][rndC2];
+                    RutasMejor[rnd2][rndC2]=auxiliar;
+                    
+                }
+            }
+            cic++;
+        }
+        if(i1!=-1){
+            auxiliar=RutasMejor[i1][j1];
+            RutasMejor[i1][j1]=RutasMejor[i2][j2];
+            RutasMejor[i2][j2]=auxiliar;
+            i1=-1;
         }
         /*Hasta aqui colocarlo como funcion.*/
         clock_t end = clock();
         float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-        printf("%f\n",seconds);
-        printf("%d\n",CostoMejor);
+        //printf("%f\n",seconds);
         if(CostoMejor<CostoActual){
-                matrixcopy (Rutas,RutasMejor, number, n);
-                ImprimirMatriz(Rutas,number,n);
+                printf("%d\n",CostoMejor);
+                //matrixcopy (Rutas,RutasMejor, number, n);
+                //ImprimirMatriz(Rutas,number,n);
                 CostoActual = CostoMejor;
         }
         it++;

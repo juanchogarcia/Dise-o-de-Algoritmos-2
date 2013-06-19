@@ -38,6 +38,6 @@ void ImprimirMatriz(int **matriz,int n,int m){
 		printf("\n");
 	}
         printf("\n");
-        /*printf("%d\n",verif);*/
+        printf("%d\n",verif);
         printf("\n");
 }
