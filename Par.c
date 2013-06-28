@@ -70,3 +70,10 @@ int Longitud(Pares *p){
 	}
 	return tam;
 }
+
+
+Taboo* EliminarTaboo(Taboo **p,int i1,int j1,int i2,int j2){
+    Taboo *Temporal;
+    return Temporal;
+
+}
