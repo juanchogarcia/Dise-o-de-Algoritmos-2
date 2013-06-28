@@ -2,6 +2,7 @@
 int Cap;
 double CostoRutaAct = 0;
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -14,6 +15,8 @@ double CostoRutaAct = 0;
 #define N 100
 #define True 1
 #define False 0
+
+Taboo *taboo = NULL;
 
 /* Procedimiento que copia una matriz en otra. */
 
@@ -149,6 +152,13 @@ int EntreCiudad(int *ruta1, int *ruta2, int *ciudad1, int *ciudad2, int **RutasM
         rndC2 = rand() % (LRec[rnd]);
     }
 
+    if (Buscar_Taboo(taboo, rnd, rndC1, rnd, rndC2))
+        printf("True");
+    else {
+        InsertarTaboo(&taboo, rnd, rndC1, rnd, rndC2, 10);
+        printf("False");
+    }
+
     //Swap entre ciudades de la misma ruta.
     auxiliar = RutasMejor[rnd][rndC1];
     RutasMejor[rnd][rndC1] = RutasMejor[rnd][rndC2];
@@ -199,10 +209,19 @@ int EntreRutas(int *ruta1, int *ruta2, int *ciudad1, int *ciudad2, int **RutasMe
     rndC1 = rand() % (LRec[rnd]);
     rndC2 = rand() % (LRec[rnd2]);
 
+    if (Buscar_Taboo(taboo, rnd, rndC1, rnd2, rndC2))
+        printf("True");
+    else {
+        InsertarTaboo(&taboo, rnd, rndC1, rnd2, rndC2, 10);
+        printf("False");
+    }
+
+    //Imprimir_Taboo(taboo);
+
     if ((Carga[rnd] - Datos[0][RutasMejor[rnd][rndC1]] + Datos[0][RutasMejor[rnd2][rndC2]]) <= Cap && (Carga[rnd2] - Datos[0][RutasMejor[rnd2][rndC2]] + Datos[0][RutasMejor[rnd][rndC1]]) <= Cap) {
         Carga[rnd] = Carga[rnd] - Datos[0][RutasMejor[rnd][rndC1]] + Datos[0][RutasMejor[rnd2][rndC2]];
         Carga[rnd2] = Carga[rnd2] - Datos[0][RutasMejor[rnd2][rndC2]] + Datos[0][RutasMejor[rnd][rndC1]];
-
+        //printf("holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         //Swap entre ambas ciudades.
         auxiliar = RutasMejor[rnd][rndC1];
         RutasMejor[rnd][rndC1] = RutasMejor[rnd2][rndC2];
@@ -282,7 +301,7 @@ int main(int argc, char **argv) {
         }
 
     }
-    
+
     int RutasCambio[number];
     int CostoRutas[number];
     int LRec[number];
@@ -380,7 +399,7 @@ int main(int argc, char **argv) {
     int boolredRootext = True;
 
     if (boolredRootext) {
-        while (redRut < 50000) {
+        while (redRut < 2) {
             rnd = rand() % (number);
             while (LRec[rnd] < 1) {
                 rnd = rand() % (number);
@@ -418,7 +437,7 @@ int main(int argc, char **argv) {
                 LRec[rnd]--;
             }
 
-            printf("%d ", redRut);
+            //printf("%d ", redRut);
             redRut++;
         }
     }
@@ -432,12 +451,11 @@ int main(int argc, char **argv) {
         clock_t start = clock();
         int bol = True;
         while (cic < 50) {
-            if (bol){
-                bol=False;
+            if (bol) {
+                bol = False;
                 CostoMejor = EntreCiudad(&i1, &i2, &j1, &j2, RutasMejor, CostoActual, Costos, Datos, LRec, number, n, CostoRutas, RutasCambio);
-            }
-            else{
-                bol=True;                
+            } else {
+                bol = True;
                 CostoMejor = EntreRutas(&i1, &i2, &j1, &j2, RutasMejor, CostoActual, Costos, Datos, LRec, Carga, number, n, CostoRutas, RutasCambio);
             }
             cic++;
