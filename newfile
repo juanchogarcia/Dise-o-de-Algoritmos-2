@@ -1,0 +1,2 @@
+    if ((i1 == Temporal->i1 && i2 == Temporal->i2 && j1 == Temporal->j1 && j2 == Temporal->j2) ||
+            (i2 == Temporal->i1 && i1 == Temporal->i2 && j2 == Temporal->j1 && j1 == Temporal->j2)) {

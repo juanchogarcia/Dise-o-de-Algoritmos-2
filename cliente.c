@@ -2,7 +2,6 @@
 int Cap;
 double CostoRutaAct = 0;
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -16,7 +15,8 @@ double CostoRutaAct = 0;
 #define True 1
 #define False 0
 
-Taboo *taboo = NULL;
+int taboo=0;
+int tabu[4][20];
 
 /* Procedimiento que copia una matriz en otra. */
 
@@ -151,14 +151,14 @@ int EntreCiudad(int *ruta1, int *ruta2, int *ciudad1, int *ciudad2, int **RutasM
     while (rndC1 == rndC2) {
         rndC2 = rand() % (LRec[rnd]);
     }
+    
+    tabu[0][taboo]=rnd;
+    tabu[1][taboo]=rndC1;
+    tabu[2][taboo]=rnd;
+    tabu[3][taboo]=rndC2;
 
-    if (Buscar_Taboo(taboo, rnd, rndC1, rnd, rndC2))
-        printf("True");
-    else {
-        InsertarTaboo(&taboo, rnd, rndC1, rnd, rndC2, 10);
-        printf("False");
-    }
-
+        
+    
     //Swap entre ciudades de la misma ruta.
     auxiliar = RutasMejor[rnd][rndC1];
     RutasMejor[rnd][rndC1] = RutasMejor[rnd][rndC2];
@@ -209,20 +209,18 @@ int EntreRutas(int *ruta1, int *ruta2, int *ciudad1, int *ciudad2, int **RutasMe
     rndC1 = rand() % (LRec[rnd]);
     rndC2 = rand() % (LRec[rnd2]);
 
-    if (Buscar_Taboo(taboo, rnd, rndC1, rnd2, rndC2))
-        printf("True");
-    else {
-        InsertarTaboo(&taboo, rnd, rndC1, rnd2, rndC2, 10);
-        printf("False");
-    }
-
     //Imprimir_Taboo(taboo);
 
     if ((Carga[rnd] - Datos[0][RutasMejor[rnd][rndC1]] + Datos[0][RutasMejor[rnd2][rndC2]]) <= Cap && (Carga[rnd2] - Datos[0][RutasMejor[rnd2][rndC2]] + Datos[0][RutasMejor[rnd][rndC1]]) <= Cap) {
         Carga[rnd] = Carga[rnd] - Datos[0][RutasMejor[rnd][rndC1]] + Datos[0][RutasMejor[rnd2][rndC2]];
         Carga[rnd2] = Carga[rnd2] - Datos[0][RutasMejor[rnd2][rndC2]] + Datos[0][RutasMejor[rnd][rndC1]];
-        //printf("holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        //Swap entre ambas ciudades.
+
+        //if para verificar que ni este en lista taboo
+        tabu[0][taboo] = rnd;
+        tabu[1][taboo] = rndC1;
+        tabu[2][taboo] = rnd2;
+        tabu[3][taboo] = rndC2;
+
         auxiliar = RutasMejor[rnd][rndC1];
         RutasMejor[rnd][rndC1] = RutasMejor[rnd2][rndC2];
         RutasMejor[rnd2][rndC2] = auxiliar;
@@ -249,7 +247,9 @@ int EntreRutas(int *ruta1, int *ruta2, int *ciudad1, int *ciudad2, int **RutasMe
 //Programa Principal.
 
 int main(int argc, char **argv) {
-
+    
+    int tabu[4][20];
+    
     srand(time(NULL));
     FILE *archivo;
     archivo = fopen(argv[1], "r");
@@ -392,6 +392,7 @@ int main(int argc, char **argv) {
     int CostoActual;
     int CostoMejor;
     int CostoInt;
+    
     CostoActual = Costo(Costos, Rutas, Datos, number, n, CostoRutas, RutasCambio);
     printf("%d\n", CostoActual);
     matrixcopy(RutasMejor, Rutas, number, n);
@@ -451,6 +452,7 @@ int main(int argc, char **argv) {
         clock_t start = clock();
         int bol = True;
         while (cic < 50) {
+            taboo=(taboo++)%20;
             if (bol) {
                 bol = False;
                 CostoMejor = EntreCiudad(&i1, &i2, &j1, &j2, RutasMejor, CostoActual, Costos, Datos, LRec, number, n, CostoRutas, RutasCambio);
@@ -466,7 +468,6 @@ int main(int argc, char **argv) {
             RutasMejor[i2][j2] = auxiliar;
             i1 = -1;
         }
-
         clock_t end = clock();
         float seconds = (float) (end - start) / CLOCKS_PER_SEC;
         //printf("%f\n",seconds);

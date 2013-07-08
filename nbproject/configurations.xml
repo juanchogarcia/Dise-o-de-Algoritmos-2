@@ -8,6 +8,7 @@
       <in>Vector.h</in>
       <in>cliente.c</in>
       <in>compare2</in>
+      <in>newfile</in>
       <in>salida</in>
       <in>salida2</in>
     </df>
@@ -52,6 +53,8 @@
       <item path="cliente.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="compare2" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="newfile" ex="false" tool="3" flavor2="0">
       </item>
       <item path="salida" ex="false" tool="3" flavor2="0">
       </item>
