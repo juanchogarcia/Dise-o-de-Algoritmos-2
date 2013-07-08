@@ -14,6 +14,24 @@ double CostoRutaAct = 0;
 #define N 100
 #define True 1
 #define False 0
+#define tabooTam 100
+
+int taboo[4][tabooTam];
+int posTaboo=0;
+
+int buscarTaboo(int i1, int i2, int j1, int j2){
+    int i;
+    int ret=1;
+    for(i=0;i<tabooTam;++i){
+        if((taboo[0][i]==i1 && taboo[1][i]==j1 && taboo[2][i]==i2 && taboo[3][i]==j2)||
+           (taboo[0][i]==i2 && taboo[1][i]==j2 && taboo[2][i]==i1 && taboo[3][i]==j1)){
+            ret=0;
+            //printf("Entre Taboo \n");
+            break;
+        }
+    }
+    return ret;
+}
 
 /* Procedimiento que copia una matriz en otra. */
 
@@ -31,7 +49,7 @@ void matrixcopy(int **destmat, int **srcmat, int n, int m) {
 /* Funcion que obtiene el costo total de una solucion al VRP con ventanas deslizantes. */
 
 double Costo(int **Costos, int **Rutas, int **Datos, int veh, int cli, int *CostoRutas, int *RutasCambio) {
-    double cost = 0.0;
+    double cost = 0.0;00
     int i, j;
     int Cargas[2][veh];
 
@@ -149,24 +167,32 @@ int EntreCiudad(int *ruta1, int *ruta2, int *ciudad1, int *ciudad2, int **RutasM
         rndC2 = rand() % (LRec[rnd]);
     }
 
-    //Swap entre ciudades de la misma ruta.
-    auxiliar = RutasMejor[rnd][rndC1];
-    RutasMejor[rnd][rndC1] = RutasMejor[rnd][rndC2];
-    RutasMejor[rnd][rndC2] = auxiliar;
+    if (buscarTaboo(rnd, rndC1, rnd, rndC2)) {
+        //printf("hola2\n");
+        taboo[0][posTaboo]=rnd;
+        taboo[1][posTaboo]=rndC1;
+        taboo[2][posTaboo]=rnd;
+        taboo[3][posTaboo]=rndC2;
+                
+        //Swap entre ciudades de la misma ruta.
+        auxiliar = RutasMejor[rnd][rndC1];
+        RutasMejor[rnd][rndC1] = RutasMejor[rnd][rndC2];
+        RutasMejor[rnd][rndC2] = auxiliar;
 
-    CostoInt = Costo(Costos, RutasMejor, Datos, number, n, CostoRutas, RutasCambio);
-    if (CostoInt < CostoMejor) {
-        CostoR = CostoInt;
-        *ruta1 = rnd;
-        *ruta2 = rnd;
-        *ciudad1 = rndC1;
-        *ciudad2 = rndC2;
+        CostoInt = Costo(Costos, RutasMejor, Datos, number, n, CostoRutas, RutasCambio);
+        if (CostoInt < CostoMejor) {
+            CostoR = CostoInt;
+            *ruta1 = rnd;
+            *ruta2 = rnd;
+            *ciudad1 = rndC1;
+            *ciudad2 = rndC2;
+        }
+
+        //Deshaciendo el cambio.
+        auxiliar = RutasMejor[rnd][rndC1];
+        RutasMejor[rnd][rndC1] = RutasMejor[rnd][rndC2];
+        RutasMejor[rnd][rndC2] = auxiliar;
     }
-
-    //Deshaciendo el cambio.
-    auxiliar = RutasMejor[rnd][rndC1];
-    RutasMejor[rnd][rndC1] = RutasMejor[rnd][rndC2];
-    RutasMejor[rnd][rndC2] = auxiliar;
     return CostoR;
 }
 
@@ -203,6 +229,14 @@ int EntreRutas(int *ruta1, int *ruta2, int *ciudad1, int *ciudad2, int **RutasMe
         Carga[rnd] = Carga[rnd] - Datos[0][RutasMejor[rnd][rndC1]] + Datos[0][RutasMejor[rnd2][rndC2]];
         Carga[rnd2] = Carga[rnd2] - Datos[0][RutasMejor[rnd2][rndC2]] + Datos[0][RutasMejor[rnd][rndC1]];
 
+        if (buscarTaboo(rnd, rndC1, rnd2, rndC2)) {
+        
+        //printf("hola\n");
+        taboo[0][posTaboo]=rnd;
+        taboo[1][posTaboo]=rndC1;
+        taboo[2][posTaboo]=rnd2;
+        taboo[3][posTaboo]=rndC2;
+                
         //Swap entre ambas ciudades.
         auxiliar = RutasMejor[rnd][rndC1];
         RutasMejor[rnd][rndC1] = RutasMejor[rnd2][rndC2];
@@ -221,6 +255,7 @@ int EntreRutas(int *ruta1, int *ruta2, int *ciudad1, int *ciudad2, int **RutasMe
         auxiliar = RutasMejor[rnd][rndC1];
         RutasMejor[rnd][rndC1] = RutasMejor[rnd2][rndC2];
         RutasMejor[rnd2][rndC2] = auxiliar;
+        }
 
     }
     return CostoR;
@@ -231,6 +266,14 @@ int EntreRutas(int *ruta1, int *ruta2, int *ciudad1, int *ciudad2, int **RutasMe
 
 int main(int argc, char **argv) {
 
+    int tab = 0;
+    for (tab = 0; tab < tabooTam; ++tab) {
+        taboo[0][tab]=0;
+        taboo[1][tab]=0;
+        taboo[2][tab]=0;
+        taboo[3][tab]=0;
+    }
+    
     srand(time(NULL));
     FILE *archivo;
     archivo = fopen(argv[1], "r");
@@ -418,7 +461,7 @@ int main(int argc, char **argv) {
                 LRec[rnd]--;
             }
 
-            printf("%d ", redRut);
+            //printf("%d ", redRut);
             redRut++;
         }
     }
@@ -431,17 +474,23 @@ int main(int argc, char **argv) {
         CostoMejor = CostoActual;
         clock_t start = clock();
         int bol = True;
-        while (cic < 50) {
+        while (cic < 1000) {
+            posTaboo++;
+            if(posTaboo==tabooTam){
+                posTaboo=0;
+            }
             if (bol){
                 bol=False;
                 CostoMejor = EntreCiudad(&i1, &i2, &j1, &j2, RutasMejor, CostoActual, Costos, Datos, LRec, number, n, CostoRutas, RutasCambio);
-            }
+            }   
             else{
                 bol=True;                
                 CostoMejor = EntreRutas(&i1, &i2, &j1, &j2, RutasMejor, CostoActual, Costos, Datos, LRec, Carga, number, n, CostoRutas, RutasCambio);
             }
+            //printf("%d %d  %d \n",CostoActual,CostoMejor,i1);
             cic++;
         }
+         //printf("%d %d  %d \n",CostoActual,CostoMejor,i1);
         if (i1 != -1) {
             auxiliar = RutasMejor[i1][j1];
             RutasMejor[i1][j1] = RutasMejor[i2][j2];
