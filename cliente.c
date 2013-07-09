@@ -14,7 +14,7 @@ double CostoRutaAct = 0;
 #define N 100
 #define True 1
 #define False 0
-#define tabooTam 100
+#define tabooTam 15 //Gendreau usa 4 y 5
 
 int taboo[4][tabooTam];
 int posTaboo=0;
@@ -32,6 +32,13 @@ int buscarTaboo(int i1, int i2, int j1, int j2){
     }
     return ret;
 }
+/*
+void imprimirTaboo(){
+    int i = 0;
+    for(i=0; i<tabooTam; ++i){
+        
+    }
+}*/
 
 /* Procedimiento que copia una matriz en otra. */
 
@@ -49,7 +56,7 @@ void matrixcopy(int **destmat, int **srcmat, int n, int m) {
 /* Funcion que obtiene el costo total de una solucion al VRP con ventanas deslizantes. */
 
 double Costo(int **Costos, int **Rutas, int **Datos, int veh, int cli, int *CostoRutas, int *RutasCambio) {
-    double cost = 0.0;00
+    double cost = 0.0;
     int i, j;
     int Cargas[2][veh];
 
@@ -79,9 +86,9 @@ double Costo(int **Costos, int **Rutas, int **Datos, int veh, int cli, int *Cost
                 } else {
                     Cargas[1][i] = Cargas[1][i] + Costos[Rutas[i][j - 1]][Rutas[i][j]] + Datos[3][Rutas[i][j]];
                 }
-
+                //Penalizacion???
                 if (Cargas[1][i] > Datos[2][Rutas[i][j]]) {
-                    Cargas[0][i] = Cargas[0][i] + (Cargas[1][i] - Datos[2][Rutas[i][j]]);
+                    Cargas[0][i] = Cargas[0][i] + (Cargas[1][i] - Datos[2][Rutas[i][j]])*5;
                 }
             }
             Cargas[0][i] = Cargas[0][i] + Costos[Rutas[i][j - 1]][0];
@@ -265,7 +272,7 @@ int EntreRutas(int *ruta1, int *ruta2, int *ciudad1, int *ciudad2, int **RutasMe
 //Programa Principal.
 
 int main(int argc, char **argv) {
-
+    
     int tab = 0;
     for (tab = 0; tab < tabooTam; ++tab) {
         taboo[0][tab]=0;
@@ -297,11 +304,13 @@ int main(int argc, char **argv) {
     if (archivo == NULL) {
         printf("\nError de apertura del archivo. \n\n");
     } else {
+        
         fscanf(archivo, "%s", buffer);
         fscanf(archivo, "%s", buffer);
         fscanf(archivo, "%s", buffer);
         fscanf(archivo, "%s", buffer);
         fscanf(archivo, "%d %d", &number, &capacity);
+        
         Cap = capacity;
         fscanf(archivo, "%s", buffer);
         fscanf(archivo, "%s", buffer);
@@ -420,12 +429,13 @@ int main(int argc, char **argv) {
     printf("%d\n", CostoActual);
     matrixcopy(RutasMejor, Rutas, number, n);
     int redRut = 0;
-    int boolredRootext = True;
-
+    int boolredRootext = False;
+ 
     if (boolredRootext) {
         while (redRut < 50000) {
             rnd = rand() % (number);
             while (LRec[rnd] < 1) {
+                printf("%d ", redRut);
                 rnd = rand() % (number);
             }
 
@@ -433,14 +443,14 @@ int main(int argc, char **argv) {
             while (LRec[rnd2] < 1) {
                 rnd2 = rand() % (number);
             }
-
+/*
             while (rnd == rnd2) {
                 rnd2 = rand() % (number);
                 while (LRec[rnd2] < 1) {
                     rnd2 = rand() % (number);
                 }
             }
-
+*/
             rndC1 = rand() % (LRec[rnd]);
 
             if ((Carga[rnd2] + Datos[0][RutasMejor[rnd][rndC1]]) <= Cap) {
@@ -461,7 +471,7 @@ int main(int argc, char **argv) {
                 LRec[rnd]--;
             }
 
-            //printf("%d ", redRut);
+            printf("%d ", redRut);
             redRut++;
         }
     }
@@ -469,12 +479,13 @@ int main(int argc, char **argv) {
     CostoActual = Costo(Costos, RutasMejor, Datos, number, n, CostoRutas, RutasCambio);
     printf("%d\n", CostoActual);
     int CostoR;
+    clock_t start = clock();
     while (1) {
         cic = 0;
         CostoMejor = CostoActual;
-        clock_t start = clock();
+        
         int bol = True;
-        while (cic < 1000) {
+        while (cic < 50) {
             posTaboo++;
             if(posTaboo==tabooTam){
                 posTaboo=0;
@@ -498,12 +509,16 @@ int main(int argc, char **argv) {
             i1 = -1;
         }
 
-        clock_t end = clock();
-        float seconds = (float) (end - start) / CLOCKS_PER_SEC;
-        //printf("%f\n",seconds);
+
         if (CostoMejor < CostoActual) {
             printf("%d\n", CostoMejor);
             CostoActual = CostoMejor;
+            if(CostoActual<4500){
+                    clock_t end = clock();
+                    float seconds = (float) (end - start) / CLOCKS_PER_SEC;
+                    printf("%f\n",seconds);
+            }
+            ImprimirMatriz(RutasMejor,number,n);
         }
         it++;
     }
