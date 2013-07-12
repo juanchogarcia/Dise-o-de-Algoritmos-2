@@ -41,3 +41,28 @@ void ImprimirMatriz(int **matriz,int n,int m){
         printf("%d\n",verif);
         printf("\n");
 }
+
+int buscarTaboo(int i1, int i2, int j1, int j2,int **taboo,int tabooTam){
+    int i;
+    int ret=1;
+    for(i=0;i<tabooTam;++i){
+        if((taboo[0][i]==i1 && taboo[1][i]==j1 && taboo[2][i]==i2 && taboo[3][i]==j2)||
+           (taboo[0][i]==i2 && taboo[1][i]==j2 && taboo[2][i]==i1 && taboo[3][i]==j1)){
+            ret=0;
+            //printf("Entre Taboo \n");
+            break;
+        }
+    }
+    return ret;
+}
+
+/* Procedimiento que copia una matriz en otra. */
+
+void matrixcopy(int **destmat, int **srcmat, int n, int m) {
+    int i, j;
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < m; j++) {
+            destmat[i][j] = srcmat[i][j];
+        }
+    }
+}

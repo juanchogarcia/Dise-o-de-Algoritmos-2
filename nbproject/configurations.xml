@@ -2,15 +2,15 @@
 <configurationDescriptor version="89">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <df root="." name="Dise-o-de-Algoritmos-2">
+      <in>Lectura.c</in>
+      <in>Lectura.h</in>
+      <in>Metaheuristicas.c</in>
+      <in>Metaheuristicas.h</in>
       <in>Par.c</in>
       <in>Par.h</in>
       <in>Vector.c</in>
       <in>Vector.h</in>
       <in>cliente.c</in>
-      <in>compare2</in>
-      <in>newfile</in>
-      <in>salida</in>
-      <in>salida2</in>
     </df>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -42,6 +42,14 @@
           <executablePath>cliente</executablePath>
         </makeTool>
       </makefileType>
+      <item path="Lectura.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="Lectura.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Metaheuristicas.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="Metaheuristicas.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Par.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="Par.h" ex="false" tool="3" flavor2="0">
@@ -51,14 +59,6 @@
       <item path="Vector.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="cliente.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="compare2" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="newfile" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="salida" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="salida2" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>
